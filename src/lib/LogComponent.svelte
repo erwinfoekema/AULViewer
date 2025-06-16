@@ -9,7 +9,13 @@
     const dispatch = createEventDispatcher();
 
     function handleClick() {
-        dispatch("logClicked", log);
+        if (log.message.includes("Received: Screen  On")) {
+            dispatch("logClicked", { log, screenOn: true });
+        } else if (log.message.includes("Received: Screen  Off")) {
+            dispatch("logClicked", { log, screenOn: false });
+        } else {
+            dispatch("logClicked", { log });
+        }
     }
 </script>
 

@@ -6,6 +6,8 @@
     import LogComponent from "$lib/LogComponent.svelte";
     import LogHeader from "$lib/LogHeader.svelte";
 
+    let setScreenOn: ((on: boolean) => void) | null = null;
+
     let availableFiles = [
         "20250903_1450.json",
         "20250903_1451.json",
@@ -18,12 +20,8 @@
 
     let screenIsOn = false;
 
-    function handleLogClick(log: LogEntry) {
-        if (log.message.includes("Screen On")) {
-            screenIsOn = true;
-        } else if (log.message.includes("Screen Off")) {
-            screenIsOn = false;
-        }
+    function handleLogClick({ screenOn }: { screenOn: boolean }) {
+        screenIsOn = screenOn;
     }
     async function loadFile(file: string) {
         try {
@@ -40,10 +38,15 @@
         log.message.toLowerCase().includes(searchTerm.toLowerCase()),
     );
 
+    $: if (setScreenOn) setScreenOn(screenIsOn);
+
     onMount(() => {
         loadFile(selectedFile);
         const container = document.getElementById("three-container");
-        if (container) init3d(container);
+        if (container) {
+            const api = init3d(container);
+            setScreenOn = api.setScreenOn;
+        }
     });
 </script>
 
@@ -53,7 +56,10 @@
             {availableFiles}
             {selectedFile}
             {searchTerm}
-            on:fileChange={(e) => (selectedFile = e.detail)}
+            on:fileChange={(e) => {
+                selectedFile = e.detail;
+                loadFile(e.detail);
+            }}
             on:searchChange={(e) => (searchTerm = e.detail)}
         />
         {#if filteredLogs.length === 0}
@@ -61,12 +67,14 @@
         {:else}
             {#each filteredLogs as log}
                 <LogComponent
+                    on:logClicked={(e) => {
+                        if (e.detail.screenOn !== undefined) {
+                            setScreenOn(e.detail.screenOn);
+                        }
+                    }}
                     {log}
                     {searchTerm}
-                    on:logClicked={(e) => handleLogClick(e.detail)}
                 />
-
-            
             {/each}
         {/if}
     </div>

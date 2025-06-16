@@ -6,22 +6,12 @@
   // Emit updates
   import { createEventDispatcher } from "svelte";
   const dispatch = createEventDispatcher();
-
-  function handleFileChange(event: Event) {
-    const value = (event.target as HTMLSelectElement).value;
-    dispatch("searchChange", (event.target as HTMLInputElement).value);
-  }
-
-  function handleSearchChange(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    dispatch("searchChange", (event.target as HTMLInputElement).value);
-  }
 </script>
 
 <div class="header-bar">
   <label>
     Bestand:
-    <select on:change={handleFileChange} bind:value={selectedFile}>
+    <select bind:value={selectedFile} on:change={(e) => dispatch("fileChange", (e.target as HTMLSelectElement).value)}>
       {#each availableFiles as file}
         <option value={file}>{file}</option>
       {/each}
@@ -33,8 +23,9 @@
     <input
       type="text"
       placeholder="Type om te filteren..."
-      value={searchTerm}
-      on:input={handleSearchChange}
+      bind:value={searchTerm}
+      on:input={(e) =>
+        dispatch("searchChange", (e.target as HTMLInputElement).value)}
     />
   </label>
 </div>

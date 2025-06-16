@@ -36,6 +36,7 @@ export function init3d(container: HTMLElement) {
     new THREE.MeshStandardMaterial({ color: 0xdddddd }), // front (screen off)
     new THREE.MeshStandardMaterial({ color: 0x333333 })  // back
   ];
+  const screenMaterial = materials[4];
   const phone = new THREE.Mesh(phoneGeometry, materials);
   scene.add(phone);
 
@@ -44,4 +45,10 @@ export function init3d(container: HTMLElement) {
     renderer.render(scene, camera);
   }
   animate();
+
+  function setScreenOn(on: boolean) {
+    screenMaterial.color.set(on ? 0xffffff : 0xdddddd);
+  }
+
+  return { setScreenOn };
 }
