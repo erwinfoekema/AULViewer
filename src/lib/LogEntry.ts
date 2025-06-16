@@ -8,20 +8,13 @@ export class LogEntry {
   pid: string;
   message: string;
 
-  constructor(data: {
-    date: string;
-    time: string;
-    hostname: string;
-    process: string;
-    pid: string;
-    message: string;
-  }) {
-    this.date = data.date;
-    this.time = data.time;
-    this.hostname = data.hostname;
-    this.process = data.process;
-    this.pid = data.pid;
-    this.message = data.message;
+  constructor(data: Record<string, any>) {
+    this.date = data.date || "onbekend";
+    this.time = data.time || "onbekend";
+    this.hostname = data.hostname || "–";
+    this.process = data.process || "onbekend";
+    this.pid = String(data.pid ?? data.PID ?? "?");
+    this.message = data.message ?? data.data ?? "(geen bericht)";
   }
 
   get datetime(): string {
